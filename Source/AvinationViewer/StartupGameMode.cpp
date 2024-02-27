@@ -50,9 +50,9 @@ void AStartupGameMode::HandleMatchIsWaitingToStart()
         s->RequestResolutionChange(size.X, size.Y, s->GetFullscreenMode());
     }
     Super::HandleMatchIsWaitingToStart();
-//    GEngine->GameViewport->GetWindow()->GetTopmostAncestor()->Maximize(); //->SetSizingRule(ESizingRule::FixedSize);
-//    GEngine->GameViewport->GetWindow()->HideWindow();
-    splashUrl = TEXT("blui://Content/LocalHTML/Splash.html");
+    GEngine->GameViewport->GetWindow()->GetTopmostAncestor()->Maximize(); //->SetSizingRule(ESizingRule::FixedSize);
+    GEngine->GameViewport->GetWindow()->HideWindow();
+    // splashUrl = TEXT("blui://Content/LocalHTML/Splash.html");
 }
 
 void AStartupGameMode::HandleMatchHasStarted()
@@ -64,7 +64,7 @@ void AStartupGameMode::LoadLoginScreen()
 {
     GetWorldTimerManager().ClearTimer(loadDelayTimer);
     
-    TSharedRef<IHttpRequest> req = (&FHttpModule::Get())->CreateRequest();
+    TSharedRef<IHttpRequest,ESPMode::ThreadSafe> req = (&FHttpModule::Get())->CreateRequest();
     //req->SetHeader(TEXT("Authorization"), TEXT("Basic YXNzZXRzOmdqMzI5dWQ="));
     req->SetVerb(TEXT("GET"));
     
@@ -158,7 +158,7 @@ void AStartupGameMode::BeginLogin(FString firstName, FString lastName, FString p
     
     LoginEventEmitter.Broadcast(TEXT("LoadUrl"), TEXT("blui://Content/LocalHTML/Connecting.html"));
     
-    TSharedRef<IHttpRequest> req = (&FHttpModule::Get())->CreateRequest();
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> req = (&FHttpModule::Get())->CreateRequest();
     req->SetVerb(TEXT("POST"));
     
     password = FMD5::HashAnsiString(*password);
@@ -187,7 +187,7 @@ void AStartupGameMode::BeginLogin(FString firstName, FString lastName, FString p
     GetWorldTimerManager().SetTimer(loginDelayTimer, d, 9, false);
 }
 
-void AStartupGameMode::RealDoConnect(TSharedRef<IHttpRequest> req)
+void AStartupGameMode::RealDoConnect(TSharedRef<IHttpRequest,ESPMode::ThreadSafe> req)
 {
     GetWorldTimerManager().ClearTimer(loginDelayTimer);
     req->ProcessRequest();

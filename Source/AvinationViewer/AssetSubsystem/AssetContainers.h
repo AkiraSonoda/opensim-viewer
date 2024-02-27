@@ -51,7 +51,7 @@ public:
     int cacheHits = 0;
     
 private:
-    TSharedPtr<IHttpRequest> req;
+    TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> req;
     int queue;
     
     TArray<AssetFetchedDelegate> dispatches;

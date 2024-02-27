@@ -58,7 +58,7 @@ private:
     void RequestDone(FHttpRequestPtr request, FHttpResponsePtr response, bool bWasSuccessful);
     void LoginRequestDone(FHttpRequestPtr request, FHttpResponsePtr response, bool bWasSuccessful);
     void LoadLoginScreen();
-    void RealDoConnect(TSharedRef<IHttpRequest> req);
+    void RealDoConnect(TSharedRef<IHttpRequest,ESPMode::ThreadSafe> req);
     
     FTimerHandle loadDelayTimer;
     FTimerHandle loginDelayTimer;

@@ -58,6 +58,9 @@ public class AvinationViewer : ModuleRules
 			PublicAdditionalLibraries.Add(Path.Combine(windeps,"zlibwapi.lib"));
 			PublicAdditionalLibraries.Add(Path.Combine(windeps,"openjp2.lib"));
 			PublicAdditionalLibraries.Add(Path.Combine(windeps,"whio_amalgamation.lib"));
+			RuntimeDependencies.Add(Path.Combine(windeps, "zlibwapi.lib"));
+			RuntimeDependencies.Add(Path.Combine(windeps, "openjp2.lib.lib"));
+			RuntimeDependencies.Add(Path.Combine(windeps, "whio_amalgamation.lib"));
 			//Target.bForceEnableExceptions = true;
 //			PrivateIncludePathModuleNames.Add("TextureCompressor");
 //			PrivateIncludePaths.AddRange(new string[] {

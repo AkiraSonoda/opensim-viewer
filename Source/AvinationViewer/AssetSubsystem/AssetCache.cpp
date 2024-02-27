@@ -103,7 +103,7 @@ void AssetCache::Fetch(FGuid id, AssetFetchedDelegate delegate)
     if (!queueIndex.Contains(id))
     {
         FString sid = id.ToString(EGuidFormats::DigitsWithHyphens).ToLower();
-        FString ppath = FPaths::GameDir();
+        FString ppath = FPaths::ProjectDir();
         
         ppath = FPaths::Combine(*ppath, TEXT("cache/"),*sid);
         FPaths::MakeStandardFilename(ppath);
@@ -155,7 +155,7 @@ bool AssetCache::StartRequestFromWaitQueue()
     TSharedAssetFetchContainerRef container = queues[QueueNumber::Wait][0];
     
     container->asset->state = AssetBase::Processing;
-    TSharedRef<IHttpRequest> req = (&FHttpModule::Get())->CreateRequest();
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> req =  (&FHttpModule::Get())->CreateRequest();
     container->req = req;
     req->SetHeader(TEXT("Authorization"), TEXT("Basic YXNzZXRzOmdqMzI5dWQ="));
     req->SetVerb(TEXT("GET"));
