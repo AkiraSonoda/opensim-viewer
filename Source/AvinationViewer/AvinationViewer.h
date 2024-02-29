@@ -12,3 +12,5 @@
 #define usleep(x) std::this_thread::sleep_for(std::chrono::microseconds((unsigned long long )x));
 #include "HideWindowsPlatformTypes.h"
 #endif
+
+DECLARE_LOG_CATEGORY_EXTERN(LogViewer, All, All);
