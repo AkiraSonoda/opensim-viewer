@@ -1,7 +1,9 @@
+/*
+ * Copyright (c) Contributors. See LICENSE.TXT & CONTRIBUTORS.TXT
+ */
 #pragma once
 
-extern "C"
-{
+extern "C" {
 #include "whio_amalgamation.h"
 }
 
@@ -10,16 +12,13 @@ extern "C"
 /**
  * Platform file wrapper to be able to use whio files.
  **/
-class AVINATIONVIEWER_API FWhioPlatformFile : public IPlatformFile
-{
+class AVINATIONVIEWER_API FWhioPlatformFile : public IPlatformFile {
 	/** Wrapped file */
 	IPlatformFile* LowerLevel;
-    FString gamePath;
-    
-public:
+	FString gamePath;
 
-	static const TCHAR* GetTypeName()
-	{
+public:
+	static const TCHAR* GetTypeName() {
 		return TEXT("WhioFile");
 	}
 
@@ -38,13 +37,11 @@ public:
 	virtual bool ShouldBeUsed(IPlatformFile* Inner, const TCHAR* CmdLine) const override;
 	virtual bool Initialize(IPlatformFile* Inner, const TCHAR* CommandLineParam) override;
 
-	virtual IPlatformFile* GetLowerLevel() override
-	{
+	virtual IPlatformFile* GetLowerLevel() override {
 		return LowerLevel;
 	}
 
-	virtual const TCHAR* GetName() const override
-	{
+	virtual const TCHAR* GetName() const override {
 		return FWhioPlatformFile::GetTypeName();
 	}
 
@@ -69,14 +66,16 @@ public:
 	virtual bool CreateDirectory(const TCHAR* Directory) override;
 	virtual bool DeleteDirectory(const TCHAR* Directory) override;
 	virtual bool IterateDirectory(const TCHAR* Directory, IPlatformFile::FDirectoryVisitor& Visitor) override;
-	virtual bool IterateDirectoryRecursively(const TCHAR* Directory, IPlatformFile::FDirectoryVisitor& Visitor) override;
+	virtual bool
+	IterateDirectoryRecursively(const TCHAR* Directory, IPlatformFile::FDirectoryVisitor& Visitor) override;
 	virtual bool DeleteDirectoryRecursively(const TCHAR* Directory) override;
 	virtual bool CreateDirectoryTree(const TCHAR* Directory) override;
-	virtual bool CopyFile(const TCHAR* To, const TCHAR* From, EPlatformFileRead ReadFlags, EPlatformFileWrite WriteFlags) override;
+	virtual bool CopyFile(const TCHAR* To, const TCHAR* From, EPlatformFileRead ReadFlags,
+	                      EPlatformFileWrite WriteFlags) override;
 	FString ConvertToAbsolutePathForExternalAppForRead(const TCHAR* Filename) override;
 	FString ConvertToAbsolutePathForExternalAppForWrite(const TCHAR* Filename) override;
-    virtual FFileStatData GetStatData(const TCHAR* FilenameOrDirectory) override;
-    virtual bool IterateDirectoryStat(const TCHAR* Directory, FDirectoryStatVisitor& Visitor) override;
+	virtual FFileStatData GetStatData(const TCHAR* FilenameOrDirectory) override;
+	virtual bool IterateDirectoryStat(const TCHAR* Directory, FDirectoryStatVisitor& Visitor) override;
 	// END IPlatformFile Interface
 
 	// BEGIN Console commands
@@ -87,5 +86,3 @@ public:
 #endif
 	// END Console commands
 };
-
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors,
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,24 +29,17 @@
 
 
 // Sets default values
-AAvinationBaseActor::AAvinationBaseActor()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+AAvinationBaseActor::AAvinationBaseActor() {
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
-void AAvinationBaseActor::BeginPlay()
-{
+void AAvinationBaseActor::BeginPlay() {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
-void AAvinationBaseActor::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-
+void AAvinationBaseActor::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
 }
-

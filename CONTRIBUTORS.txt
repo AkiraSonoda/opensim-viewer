@@ -1,7 +1,14 @@
+OpenSource contributors to  Fork Akira Sonoda:
+
+Akira Sonoda
+
+Open source contributors from http://opensimulator.org/:
+
+Crista Lopez
+Diva Canto
+
 Early contributors to the closed source Avination version:
 
 Melanie Thielker
 Ubit Umarov
 Leonie Geartner
-
-Open source contributors:

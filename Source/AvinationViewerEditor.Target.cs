@@ -33,7 +33,6 @@ public class AvinationViewerEditorTarget : TargetRules
 	public AvinationViewerEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-        ExtraModuleNames.Add("AvinationViewer");
+		ExtraModuleNames.Add("AvinationViewer");
 	}
-
 }
