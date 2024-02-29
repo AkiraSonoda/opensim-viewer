@@ -24,9 +24,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-using UnrealBuildTool;
 using System;
 using System.IO;
+using UnrealBuildTool;
+
+
+namespace UnrealBuildTool.Rules
+{
+	
 
 public class AvinationViewer : ModuleRules
 {
@@ -59,9 +64,11 @@ public class AvinationViewer : ModuleRules
 			PublicAdditionalLibraries.Add(Path.Combine(windeps,"openjp2.lib"));
 			PublicAdditionalLibraries.Add(Path.Combine(windeps,"whio_amalgamation.lib"));
 			RuntimeDependencies.Add(Path.Combine(windeps, "zlibwapi.lib"));
-			RuntimeDependencies.Add(Path.Combine(windeps, "openjp2.lib.lib"));
+			RuntimeDependencies.Add(Path.Combine(windeps, "openjp2.lib"));
 			RuntimeDependencies.Add(Path.Combine(windeps, "whio_amalgamation.lib"));
-			//Target.bForceEnableExceptions = true;
+			bEnableExceptions = true;
+
+//			Target.bForceEnableExceptions = true;
 //			PrivateIncludePathModuleNames.Add("TextureCompressor");
 //			PrivateIncludePaths.AddRange(new string[] {
 //				"Developer/Windows/WindowsTargetPlatform/Private"});
@@ -87,4 +94,5 @@ public class AvinationViewer : ModuleRules
 			PublicIncludePaths.Add("/usr/local/include/openjpeg-2.1");
 		} // additional platforms
 	}
+}
 }

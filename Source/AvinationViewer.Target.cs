@@ -26,6 +26,7 @@
  */
 using UnrealBuildTool;
 using System.Collections.Generic;
+using System.Linq;
 
 public class AvinationViewerTarget : TargetRules
 {
@@ -33,6 +34,8 @@ public class AvinationViewerTarget : TargetRules
 	{
 		Type = TargetType.Game;
         ExtraModuleNames.Add("AvinationViewer");
-	}
+        
 
+	}
+	
 }

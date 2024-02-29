@@ -29,7 +29,7 @@
 #include "AvinationViewerGameMode.h"
 
 
-struct MBB :FByteBulkData
+struct MBB :FUntypedBulkData
 {
     void SetFilename(FString name);
 #if WITH_EDITOR

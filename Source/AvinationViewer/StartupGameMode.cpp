@@ -50,9 +50,9 @@ void AStartupGameMode::HandleMatchIsWaitingToStart()
         s->RequestResolutionChange(size.X, size.Y, s->GetFullscreenMode());
     }
     Super::HandleMatchIsWaitingToStart();
-    GEngine->GameViewport->GetWindow()->GetTopmostAncestor()->Maximize(); //->SetSizingRule(ESizingRule::FixedSize);
-    GEngine->GameViewport->GetWindow()->HideWindow();
-    // splashUrl = TEXT("blui://Content/LocalHTML/Splash.html");
+    // GEngine->GameViewport->GetWindow()->GetTopmostAncestor()->Maximize(); //->SetSizingRule(ESizingRule::FixedSize);
+    // GEngine->GameViewport->GetWindow()->HideWindow();
+    splashUrl = TEXT("blui://Content/LocalHTML/Splash.html");
 }
 
 void AStartupGameMode::HandleMatchHasStarted()
