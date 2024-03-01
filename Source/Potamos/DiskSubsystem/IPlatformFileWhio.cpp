@@ -19,7 +19,7 @@ bool FWhioPlatformFile::ShouldBeUsed(IPlatformFile* Inner, const TCHAR* CmdLine)
 
 bool FWhioPlatformFile::Initialize(IPlatformFile* Inner, const TCHAR* CommandLineParam) {
 	LowerLevel = Inner;
-	gamePath = FPaths::ConvertRelativePathToFull(FPaths::Combine(*FPaths::GameDir(), TEXT("cache")));
+	gamePath = FPaths::ConvertRelativePathToFull(FPaths::Combine(*FPaths::ProjectDir(), TEXT("cache")));
 	return true;
 }
 

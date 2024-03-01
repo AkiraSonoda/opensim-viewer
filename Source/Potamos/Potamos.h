@@ -5,6 +5,8 @@
 
 #include "Engine.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogViewer, All, All);
+
 #if PLATFORM_WINDOWS
 #include "AllowWindowsPlatformTypes.h"
 #include <windows.h>

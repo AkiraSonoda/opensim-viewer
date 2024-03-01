@@ -216,7 +216,7 @@ void TextureAsset::PostProcess() {
 UTexture2D* TextureAsset::CreateTexture() {
 	bool normalMap = false;
 	FString sid = id.ToString(EGuidFormats::DigitsWithHyphens).ToLower();
-	FString ppath = FPaths::GameDir();
+	FString ppath = FPaths::ProjectDir();
 
 	ppath = FPaths::Combine(*ppath, TEXT("cache/"), *sid);
 	FPaths::MakeStandardFilename(ppath);
@@ -235,8 +235,10 @@ UTexture2D* TextureAsset::CreateTexture() {
 	}
 	while (!ar);
 
-	ar->ArIsSaving = true;
-	ar->ArIsPersistent = true;
+	// ar->ArIsSaving = true;
+	ar->GetArchiveState().SetIsSaving(true);
+	// ar->ArIsPersis   tent = true;
+	ar->GetArchiveState().SetIsPersistent(true);
 
 	UTexture2D* Texture = nullptr;
 	Texture = NewObject<UTexture2D>(GetTransientPackage(), *sid, RF_Standalone | RF_Public);
@@ -258,9 +260,9 @@ UTexture2D* TextureAsset::CreateTexture() {
 	Texture->PlatformData->SizeX = w;
 	Texture->PlatformData->SizeY = h;
 	Texture->PlatformData->PixelFormat = EPixelFormat::PF_B8G8R8A8;
-	Texture->PlatformData->NumSlices = 1;
+	Texture->PlatformData->SetNumSlices(1);
 	Texture->bForceMiplevelsToBeResident = false;
-	Texture->bIsStreamable = true;
+	// TODO Texture->bIsStreamable = true; 
 
 
 	for (int level = 0; level < nlevels; level++) {
@@ -347,9 +349,10 @@ void TextureAsset::LoadFromFile(FString file) {
 		return;
 	}
 
-	ar->ArIsLoading = true;
-	ar->ArIsPersistent = true;
-
+	// ar->ArIsSaving = true;
+	ar->GetArchiveState().SetIsSaving(true);
+	// ar->ArIsPersis   tent = true;
+	ar->GetArchiveState().SetIsPersistent(true);
 	*ar << sid;
 
 	tex = nullptr;
@@ -374,10 +377,10 @@ void TextureAsset::LoadFromFile(FString file) {
 	tex->PlatformData->SizeX = w;
 	tex->PlatformData->SizeY = h;
 	tex->PlatformData->PixelFormat = (EPixelFormat)pixelFormat;
-	tex->PlatformData->NumSlices = 1;
+	tex->PlatformData->SetNumSlices(1);
 
 	tex->bForceMiplevelsToBeResident = false;
-	tex->bIsStreamable = true;
+	// TODO tex->bIsStreamable = true; 
 
 	int minloadlevel = 0;
 	if (nlevels > 6)

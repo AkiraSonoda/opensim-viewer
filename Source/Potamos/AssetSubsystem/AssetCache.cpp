@@ -72,7 +72,7 @@ void AssetCache::Fetch(FGuid id, AssetFetchedDelegate delegate) {
 
 	if (!queueIndex.Contains(id)) {
 		FString sid = id.ToString(EGuidFormats::DigitsWithHyphens).ToLower();
-		FString ppath = FPaths::GameDir();
+		FString ppath = FPaths::ProjectDir();
 
 		ppath = FPaths::Combine(*ppath, TEXT("cache/"), *sid);
 		FPaths::MakeStandardFilename(ppath);
@@ -120,7 +120,7 @@ bool AssetCache::StartRequestFromWaitQueue() {
 	TSharedAssetFetchContainerRef container = queues[QueueNumber::Wait][0];
 
 	container->asset->state = AssetBase::Processing;
-	TSharedRef<IHttpRequest> req = (&FHttpModule::Get())->CreateRequest();
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> req = (&FHttpModule::Get())->CreateRequest();
 	container->req = req;
 	req->SetHeader(TEXT("Authorization"), TEXT("Basic YXNzZXRzOmdqMzI5dWQ="));
 	req->SetVerb(TEXT("GET"));
@@ -204,12 +204,11 @@ bool inline AssetCache::MoveToQueue(TSharedAssetFetchContainerRef fetch, int que
 }
 
 FString inline AssetCache::CreateURL(FGuid id) {
-	FString url(TEXT("http://localhost:9000/assets/"));
+	FString url(TEXT("http://grid-a.3dhosting.de:8400/assets/"));
 
-	//    if (id.A > 0x7f000000)
-	//    {
-	//        url = TEXT("http://grid-b.3dhosting.de:8400/assets/");
-	//    }
+	if (id.A > 0x7f000000) {
+		url = TEXT("http://grid-b.3dhosting.de:8400/assets/");
+	}
 
 	url.Append(id.ToString(EGuidFormats::DigitsWithHyphens).ToLower());
 

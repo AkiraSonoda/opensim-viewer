@@ -3,4 +3,6 @@
  */
 #include "Potamos.h"
 
+DEFINE_LOG_CATEGORY(LogViewer);
+
 IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, AvinationViewer, "Potamos");
