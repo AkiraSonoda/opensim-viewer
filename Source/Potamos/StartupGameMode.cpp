@@ -5,11 +5,12 @@
 #include "StartupGameMode.h"
 #include "utils/RapidXml.h"
 #include "Communication/GridInfo.h"
+#include "Log.h"
 
 DECLARE_DELEGATE(ConnectTimerDelegate);
 
 void AStartupGameMode::HandleMatchIsWaitingToStart() {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] HandleMatchIsWaitingToStart"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] HandleMatchIsWaitingToStart"));
 	UGameUserSettings* s = GEngine->GameUserSettings;
 	if (s) {
 		FIntPoint size = s->GetScreenResolution();
@@ -32,12 +33,12 @@ void AStartupGameMode::HandleMatchIsWaitingToStart() {
 }
 
 void AStartupGameMode::HandleMatchHasStarted() {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] HandleMatchHasStarted"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] HandleMatchHasStarted"));
 	Super::HandleMatchHasStarted();
 }
 
 void AStartupGameMode::LoadLoginScreen() {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] LoadLoginScreen"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] LoadLoginScreen"));
 	GetWorldTimerManager().ClearTimer(loadDelayTimer);
 
 	
@@ -46,14 +47,14 @@ void AStartupGameMode::LoadLoginScreen() {
 	req->SetVerb(TEXT("GET"));
 
 	// TODO: Make this customizable
-	req->SetURL("https://login.avination.com/get_grid_info");
+	req->SetURL("http://dereos.org/get_grid_info");
 	req->OnProcessRequestComplete().BindUObject(this, &AStartupGameMode::RequestDone);
 
 	req->ProcessRequest();
 }
 
 void AStartupGameMode::RequestDone(FHttpRequestPtr request, FHttpResponsePtr response, bool bWasSuccessful) {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] RequestDone"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] RequestDone"));
 	bool failed = false;
 
 	// Timeout, network error, et al.
@@ -105,12 +106,12 @@ void AStartupGameMode::RequestDone(FHttpRequestPtr request, FHttpResponsePtr res
 }
 
 void AStartupGameMode::LoadStartPage() {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] LoadStartPage"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] LoadStartPage"));
 	GetWorldTimerManager().SetTimer(loadDelayTimer, this, &AStartupGameMode::LoadLoginScreen, 2, false);
 }
 
 void AStartupGameMode::BeginLogin(FString firstName, FString lastName, FString password) {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] BeginLogin"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] BeginLogin"));
 	LoginEventEmitter.Broadcast(TEXT("StopSound"), TEXT("2"));
 
 	LoginEventEmitter.Broadcast(TEXT("LoadUrl"), TEXT("blui://Content/LocalHTML/Connecting.html"));
@@ -145,13 +146,13 @@ void AStartupGameMode::BeginLogin(FString firstName, FString lastName, FString p
 }
 
 void AStartupGameMode::RealDoConnect(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> req) {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] RealDoConnect"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] RealDoConnect"));
 	GetWorldTimerManager().ClearTimer(loginDelayTimer);
 	req->ProcessRequest();
 }
 
 void AStartupGameMode::LoginRequestDone(FHttpRequestPtr request, FHttpResponsePtr response, bool bWasSuccessful) {
-	UE_LOG(LogViewer, Display, TEXT("[StartupGameMode] LoginRequestDone"));
+	UE_LOG(LogPotamos, Display, TEXT("[StartupGameMode] LoginRequestDone"));
 	bool failed = false;
 
 	// Timeout, network error, et al.
