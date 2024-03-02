@@ -7,3 +7,5 @@ Potamos.sln
 Intermediate/
 Saved/
 BluCache/
+Plugins/
+.vsconfig

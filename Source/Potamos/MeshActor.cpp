@@ -98,7 +98,7 @@ void AMeshActor::BuildObject() {
 	sop->DeleteMeshData();
 	bool notphysical = !sop->isPhysical;
 
-	mesh->AttachTo(RootComponent);
+	mesh->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepRelativeTransform);
 	// root part relative position and rotation should always be null
 	// unless explicitly changed (as in edit parts on root prim)
 	mesh->SetRelativeLocation(FVector(0.0f));
@@ -125,7 +125,7 @@ void AMeshActor::BuildObject() {
 			sop->DeleteMeshData();
 
 			//subMesh->AttachParent = mesh;
-			subMesh->AttachTo(RootComponent);
+			subMesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform );
 			subMesh->SetWorldScale3D(sop->scale);
 			p = sop->position * 100;
 			subMesh->SetRelativeLocationAndRotation(p, sop->rotation);

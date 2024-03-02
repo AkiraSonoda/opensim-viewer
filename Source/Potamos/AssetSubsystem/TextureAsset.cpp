@@ -6,7 +6,7 @@
 #include "PotamosGameMode.h"
 
 
-struct MBB : FUntypedBulkData {
+struct MBB : FBulkData {
 	void SetFilename(FString name);
 #if WITH_EDITOR
 	void setAr(FArchive* ar);
@@ -14,7 +14,11 @@ struct MBB : FUntypedBulkData {
 };
 
 void MBB::SetFilename(FString name) {
-	Filename = name;
+	// TODO check if this works
+	// Filename = name;
+	FStringBuilderBase sb;
+	sb.Append(name);
+	GetPackagePath().AppendLocalFullPath(sb);
 }
 
 #if WITH_EDITOR
@@ -223,22 +227,21 @@ UTexture2D* TextureAsset::CreateTexture() {
 
 	//    UE_LOG(LogTemp, Warning, TEXT("%s"), *ppath);
 
-	FArchive* ar = 0;
+	FArchive* archive = 0;
 
 	bool retried = false;
 
 	do {
-		ar = IFileManager::Get().CreateFileWriter(*ppath);
-		if (!ar && retried)
+		archive = IFileManager::Get().CreateFileWriter(*ppath);
+		if (!archive && retried)
 			return 0;
 		retried = true;
-	}
-	while (!ar);
+	} while (!archive);
 
 	// ar->ArIsSaving = true;
-	ar->GetArchiveState().SetIsSaving(true);
+	archive->GetArchiveState().SetIsSaving(true);
 	// ar->ArIsPersis   tent = true;
-	ar->GetArchiveState().SetIsPersistent(true);
+	archive->GetArchiveState().SetIsPersistent(true);
 
 	UTexture2D* Texture = nullptr;
 	Texture = NewObject<UTexture2D>(GetTransientPackage(), *sid, RF_Standalone | RF_Public);
@@ -247,21 +250,27 @@ UTexture2D* TextureAsset::CreateTexture() {
 		return nullptr;
 	}
 
-	*ar << sid;
-	*ar << nlevels;
-	*ar << w;
-	*ar << h;
+	*archive << sid;
+	*archive << nlevels;
+	*archive << w;
+	*archive << h;
 	int pixelFormat = (int)EPixelFormat::PF_B8G8R8A8;
-	*ar << pixelFormat;
-	*ar << normalMap;
-	*ar << hasAlpha;
+	*archive << pixelFormat;
+	*archive << normalMap;
+	*archive << hasAlpha;
 
-	Texture->PlatformData = new FTexturePlatformData();
-	Texture->PlatformData->SizeX = w;
-	Texture->PlatformData->SizeY = h;
-	Texture->PlatformData->PixelFormat = EPixelFormat::PF_B8G8R8A8;
-	Texture->PlatformData->SetNumSlices(1);
-	Texture->bForceMiplevelsToBeResident = false;
+
+	FTexturePlatformData* platformData = new FTexturePlatformData();
+	platformData->SizeX = w;
+	platformData->SizeY = h;
+	platformData->PixelFormat = EPixelFormat::PF_B8G8R8A8;
+	platformData->SetNumSlices(1);
+	
+	// Texture->PlatformData->SizeX = w;
+	// Texture->PlatformData->SizeY = h;
+	// Texture->PlatformData->PixelFormat = EPixelFormat::PF_B8G8R8A8;
+	// Texture->PlatformData->SetNumSlices(1);
+	// Texture->bForceMiplevelsToBeResident = false;
 	// TODO Texture->bIsStreamable = true; 
 
 
@@ -276,37 +285,38 @@ UTexture2D* TextureAsset::CreateTexture() {
 		int tsize = lw * lh * 4;
 		NewMipData = Mip->BulkData.Realloc(tsize);
 		FMemory::Memcpy(NewMipData, (void*)texBuffer[level], tsize);
-		Texture->PlatformData->Mips.Add(Mip);
+		// Texture->PlatformData->Mips.Add(Mip);
 		Mip->BulkData.Unlock();
 		MBB* b = (MBB*)&Mip->BulkData;
 		b->SetFilename(ppath);
-		b->SetBulkDataFlags(EBulkDataFlags::BULKDATA_SerializeCompressedZLIB);
-		Mip->BulkData.Serialize(*ar, 0);
+		Mip->BulkData.SetBulkDataFlags(EBulkDataFlags::BULKDATA_SerializeCompressedZLIB);
+		platformData->Mips.Add(Mip);
+		Mip->BulkData.Serialize(*archive, 0);
 	}
 
-	ar->FlushCache();
-	ar->Close();
-	delete ar;
+	archive->FlushCache();
+	archive->Close();
+	delete archive;
 
 	if (nlevels > 6) {
 		int min = nlevels - 6;
 		for (int level = 0; level < min; level++) {
-			FTexture2DMipMap* Mip = &Texture->PlatformData->Mips[level];
-			MBB* b = (MBB*)&Mip->BulkData;
-			b->SetBulkDataFlags(EBulkDataFlags::BULKDATA_SingleUse);
+			FTexture2DMipMap* Mip = &Texture->GetPlatformData()->Mips[level];
+			// MBB* b = (MBB*)&Mip->BulkData;
+			Mip->BulkData.SetBulkDataFlags(EBulkDataFlags::BULKDATA_SingleUse);
 			Mip->BulkData.Lock(LOCK_READ_WRITE);
 			Mip->BulkData.Unlock();
-			b->SetBulkDataFlags(EBulkDataFlags::BULKDATA_SerializeCompressedZLIB);
+			Mip->BulkData.SetBulkDataFlags(EBulkDataFlags::BULKDATA_SerializeCompressedZLIB);
 		}
 	}
 
-	// another hack ... a absurd
+	Texture->SetPlatformData(platformData);
 
 #if WITH_EDITOR
 	FArchive* readAr = IFileManager::Get().CreateFileReader(*ppath, FILEREAD_Silent);
 	for (int level = 0; level < nlevels; level++) {
-		MBB* b = (MBB*)&Texture->PlatformData->Mips[level].BulkData;
-		readAr->AttachBulkData(tex, &Texture->PlatformData->Mips[level].BulkData);
+		MBB* b = (MBB*)&Texture->GetPlatformData()->Mips[level].BulkData;
+		readAr->AttachBulkData(tex, &Texture->GetPlatformData()->Mips[level].BulkData);
 		b->setAr(readAr);
 	}
 #endif
@@ -373,11 +383,11 @@ void TextureAsset::LoadFromFile(FString file) {
 	*ar << normalMap;
 	*ar << hasAlpha;
 
-	tex->PlatformData = new FTexturePlatformData();
-	tex->PlatformData->SizeX = w;
-	tex->PlatformData->SizeY = h;
-	tex->PlatformData->PixelFormat = (EPixelFormat)pixelFormat;
-	tex->PlatformData->SetNumSlices(1);
+	FTexturePlatformData* platformData = new FTexturePlatformData();
+	platformData->SizeX = w;
+	platformData->SizeY = h;
+	platformData->PixelFormat = (EPixelFormat)pixelFormat;
+	platformData->SetNumSlices(1);
 
 	tex->bForceMiplevelsToBeResident = false;
 	// TODO tex->bIsStreamable = true; 
@@ -396,7 +406,8 @@ void TextureAsset::LoadFromFile(FString file) {
 		// we should avoid this load and delete
 		// possible cloning the serializer
 		Mip->BulkData.Serialize(*ar, 0);
-		tex->PlatformData->Mips.Add(Mip);
+		// tex->PlatformData->Mips.Add(Mip);
+		
 		MBB* b = (MBB*)&Mip->BulkData;
 		b->SetFilename(file); // not in serialize
 		if (level < minloadlevel) {
@@ -405,16 +416,19 @@ void TextureAsset::LoadFromFile(FString file) {
 			Mip->BulkData.Unlock();
 		}
 		b->SetBulkDataFlags(EBulkDataFlags::BULKDATA_SerializeCompressedZLIB);
+		platformData->Mips.Add(Mip);
 	}
 
 	ar->Close();
 	delete ar;
 
+	tex->SetPlatformData(platformData);
+	
 #if WITH_EDITOR
 	FArchive* readAr = IFileManager::Get().CreateFileReader(*file, FILEREAD_Silent);
 	for (int level = 0; level < nlevels; level++) {
-		MBB* b = (MBB*)&tex->PlatformData->Mips[level].BulkData;
-		readAr->AttachBulkData(tex, &tex->PlatformData->Mips[level].BulkData);
+		MBB* b = (MBB*)&tex->GetPlatformData()->Mips[level].BulkData;
+		readAr->AttachBulkData(tex, &tex->GetPlatformData()->Mips[level].BulkData);
 		b->setAr(readAr);
 	}
 #endif
