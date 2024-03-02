@@ -47,7 +47,7 @@ void AStartupGameMode::LoadLoginScreen() {
 	req->SetVerb(TEXT("GET"));
 
 	// TODO: Make this customizable
-	req->SetURL("http://dereos.org/get_grid_info");
+	req->SetURL("http://hg.osgrid.org:80/get_grid_info");
 	req->OnProcessRequestComplete().BindUObject(this, &AStartupGameMode::RequestDone);
 
 	req->ProcessRequest();
@@ -59,6 +59,11 @@ void AStartupGameMode::RequestDone(FHttpRequestPtr request, FHttpResponsePtr res
 
 	// Timeout, network error, et al.
 	if (!response.IsValid()) {
+		if(response != nullptr) {
+			UE_LOG(LogPotamos, Error, TEXT("[StartupGameMode] RequestDone failed. Code: %d"), response->GetResponseCode());
+		} else {
+			UE_LOG(LogPotamos, Error, TEXT("[StartupGameMode] RequestDone failed. nullptr"));
+		}
 		failed = true;
 	} else if (EHttpResponseCodes::IsOk(response->GetResponseCode())) {
 		// Empty reply is a fail
@@ -83,7 +88,7 @@ void AStartupGameMode::RequestDone(FHttpRequestPtr request, FHttpResponsePtr res
 			if (!root) {
 				failed = true;
 			} else {
-				rapidxml::xml_node<>* login_page = root->first_node("login_page");
+				rapidxml::xml_node<>* login_page = root->first_node("login");
 				if (!login_page || !login_page->value()) {
 					failed = true;
 				} else {
@@ -134,7 +139,7 @@ void AStartupGameMode::BeginLogin(FString firstName, FString lastName, FString p
 	req->SetContentAsString(payload);
 
 	// TODO: Make this customizable
-	req->SetURL("https://login.avination.com/login_advanced.php");
+	req->SetURL("http://login.osgrid.org/login_advanced.php");
 
 
 	req->OnProcessRequestComplete().BindUObject(this, &AStartupGameMode::LoginRequestDone);
