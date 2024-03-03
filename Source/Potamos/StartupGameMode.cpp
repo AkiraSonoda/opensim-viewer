@@ -107,6 +107,11 @@ void AStartupGameMode::RequestDone(FHttpRequestPtr request, FHttpResponsePtr res
 	} else {
 		LoginEventEmitter.Broadcast(TEXT("PlayLogin"), "2");
 		LoginEventEmitter.Broadcast(TEXT("LoadUrl"), GridInfo::login_page);
+		FStringBuilderBase sb;
+		sb.Append("{ \"FirstName\": \"Akira\",\"LastName\": \"Sonoda\",  \"Password\": \"");
+		sb.Append("foobar");
+		sb.Append("\"}");
+		LoginEventEmitter.Broadcast(TEXT("Login"), sb.ToString());
 	}
 }
 
